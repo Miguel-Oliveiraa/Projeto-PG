@@ -16,6 +16,9 @@ public:
     plane(const vec3& p, const vec3& n, const vec3& cor, const Material& mat)
         : point(p), normal(unit_vector(n)), cor(cor), material(mat) {}
 
+    plane(const vec3& p, const vec3& n, const vec3& cor)
+        : point(p), normal(unit_vector(n)), cor(cor) {}
+
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override {
         float denom = dot(normal, r.direction());
         if (fabs(denom) > 1e-6) {

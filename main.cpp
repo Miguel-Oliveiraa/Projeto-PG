@@ -113,20 +113,29 @@ void bezier(const std::vector<triangle*>& triangles) {
     camera cam(lookfrom, lookat, vup, distance, screen_height, screen_width, nx);
     
     // Criando o mundo de objetos
-    hitable** list = new hitable*[triangles.size()];  // Aloca espaço para os triângulos + 1 (para o chão)
+    hitable** list = new hitable*[triangles.size() + 5];  // Aloca espaço para os triângulos + 1 (para o chão)
+
+    // Planos
+    list[0] = new plane(vec3(5,  0, 0), vec3(-1, 0, 0), vec3(0.0, 1.0, 0.0));  // Plano 1 (cor Verde)   
+    list[1] = new plane(vec3(-5, 0, 0), vec3(1, 0, 0), vec3(1.0, 0.0, 0.0));   // Plano 2 (cor Vermelho)
+    list[2] = new plane(vec3(0, -5, 0), vec3(0, 1, 0), vec3(1.0, 1.0, 1.0));   // Plano 3 (cor Branca)
+    list[3] = new plane(vec3(0,  5, 0), vec3(0, -1, 0), vec3(1.0, 1.0, 1.0));  // Plano 4 (cor Branca)
+    list[4] = new plane(vec3(0, 0, -5), vec3(0, 0, 1), vec3(1.0, 1.0, 1.0));   // Plano 5 (cor Branca)
+    list[5] = new plane(vec3(0, 0, 6), vec3(0, 0, -1), vec3(1.0, 1.0, 1.0));  // Plano 6 (cor Branca)
 
     // Copia os triângulos para o array
-    for (size_t i = 0; i < triangles.size(); i++) {
+    for (size_t i = 6; i < triangles.size(); i++) {
         list[i] = triangles[i];
     }
     // Cria o objeto hitable_list com os triângulos e o chão
     hitable* world = new hitable_list(list, triangles.size());
 
+
     // Criando fontes de luz
     light l1(vec3(0, 5, 5), vec3(1.0, 1.0, 1.0), 1.0); // Luz branca
     // light l2(vec3(0, 5, 0), vec3(0.0, 0.0, 0.0), 1.0); // Luz verde
-    light l3(vec3(-5, 5, 5), vec3(1.0, 0.0, 0.0), 0.8); // Luz vermelha
-    std::vector<light> lights = {l1,l3}; // Lista de luzes
+    // light l3(vec3(-5, 5, 5), vec3(1.0, 0.0, 0.0), 0.8); // Luz vermelha
+    std::vector<light> lights = {l1}; // Lista de luzes
 
     // Laço para gerar os pixels da imagem
     for (int j = ny - 1; j >= 0; j--) { 
@@ -136,7 +145,7 @@ void bezier(const std::vector<triangle*>& triangles) {
             // Gera o raio para cada pixel, usando a câmera
             ray r = cam.get_ray(u, v);
             // Calcula a cor para o ponto onde o raio atinge
-            vec3 col = color_with_shadowsteste(r, world, lights, vec3(0.0, 0.0, 0.0));
+            vec3 col = color_with_shadowsteste(r, world, lights, vec3(1, 1, 1));
             int ir = int(255.99 * col[0]); 
             int ig = int(255.99 * col[1]); 
             int ib = int(255.99 * col[2]); 
@@ -375,20 +384,20 @@ void render_bezier_surface() {
     // bezier(triangles);
 
     // CURVA HALF CORACAO:
-    // std::vector<vec3> control_points = {
-    //     vec3(0.0, -3.0, 0.0),
-    //     vec3(-3.0, 0.0, 0.0),
-    //     vec3(-1.5, 1.5, 0.0),
-    //     vec3(0.0, 0.0, 0.0)
-    // }; 
+    std::vector<vec3> control_points = {
+        vec3(0.0, -3.0, 0.0),
+        vec3(-3.0, 0.0, 0.0),
+        vec3(-1.5, 1.5, 0.0),
+        vec3(0.0, 0.0, 0.0)
+    }; 
 
     // curva cuscuzeira:
-    std::vector<vec3> control_points = {
-        vec3(-1.0, -1.0, 0.0),
-        vec3(-0.5, 1.0, 0.0),
-        vec3(0.5, -1.0, 0.0),
-        vec3(1.0, 1.0, 0.0)
-    };
+    // std::vector<vec3> control_points = {
+    //     vec3(-1.0, -1.0, 0.0),
+    //     vec3(-0.5, 1.0, 0.0),
+    //     vec3(0.5, -1.0, 0.0),
+    //     vec3(1.0, 1.0, 0.0)
+    // };
 
 
 
@@ -399,7 +408,7 @@ void render_bezier_surface() {
     bezier_curve(curve_points);
 
     std::vector<triangle*> revolution_triangles;
-    int num_segments = 36; // Number of segments for the revolution
+    int num_segments = 72; // Number of segments for the revolution
     generate_revolution_solid_from_curve(curve_points, revolution_triangles, num_segments);
     bezier(revolution_triangles);
 }
